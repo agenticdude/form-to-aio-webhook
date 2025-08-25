@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +21,7 @@ const BlogContentForm = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -59,12 +61,17 @@ const BlogContentForm = () => {
           description: "Your blog content request has been submitted successfully.",
         });
         
-        // Reset form
-        setFormData({
-          blogTitle: "",
-          seoKeywords: "",
-          contentPreference: "",
-        });
+        // If AI Generated was selected, navigate to voice config page
+        if (formData.contentPreference === 'ai-generated') {
+          navigate('/voice-config');
+        } else {
+          // Reset form for web-search option
+          setFormData({
+            blogTitle: "",
+            seoKeywords: "",
+            contentPreference: "",
+          });
+        }
       } else {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
